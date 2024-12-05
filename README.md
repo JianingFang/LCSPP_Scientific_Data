@@ -1,7 +1,7 @@
 # A long-term reconstruction of a global photosynthesis proxy from surface reflectance over 1982-2023
 
 ## Overview
-This repository contains the code and models used in the study titled **"A long-term reconstruction of spatially contiguous solar-induced fluorescence proxy from surface reflectance over 1982-2022"**. The goal of this project is to extend a proxy of satellite-observed solar-induced chlorophyll fluorescence (SIF) back to 1982, using a combination of Advanced Very High-Resolution Radiometer (AVHRR) and MODerate-resolution Imaging Spectroradiometer (MODIS) surface reflectance data. 
+This repository contains the code and models used in the study titled **"A long-term reconstruction of spatially contiguous solar-induced fluorescence proxy from surface reflectance over 1982-2023"**. The goal of this project is to extend a proxy of satellite-observed solar-induced chlorophyll fluorescence (SIF) back to 1982, using a combination of Advanced Very High-Resolution Radiometer (AVHRR) and MODerate-resolution Imaging Spectroradiometer (MODIS) surface reflectance data. 
 
 ### Abstract of the manuscript:
 Satellite-observed solar-induced chlorophyll fluorescence (SIF) is a powerful proxy for the photosynthetic characteristics of terrestrial ecosystems. However, direct SIF observations are primarily limited to the recent decade, which limits their application in detecting long-term ecosystem dynamics. In this study, we leveraged two surface reflectance bands available from both AVHRR (1982-2022) and MODIS (2001-2022). We calibrated and orbit-corrected the AVHRR bands against their MODIS counterparts during the overlapping period (2001-2022).
