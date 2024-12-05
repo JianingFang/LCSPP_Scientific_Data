@@ -1,4 +1,4 @@
-# LCSIF: A long-term reconstruction of spatially contiguous solar-induced fluorescence proxy from surface reflectance over 1982-2022
+# A long-term reconstruction of a global photosynthesis proxy from surface reflectance over 1982-2023
 
 ## Overview
 This repository contains the code and models used in the study titled **"A long-term reconstruction of spatially contiguous solar-induced fluorescence proxy from surface reflectance over 1982-2022"**. The goal of this project is to extend a proxy of satellite-observed solar-induced chlorophyll fluorescence (SIF) back to 1982, using a combination of Advanced Very High-Resolution Radiometer (AVHRR) and MODerate-resolution Imaging Spectroradiometer (MODIS) surface reflectance data. 
