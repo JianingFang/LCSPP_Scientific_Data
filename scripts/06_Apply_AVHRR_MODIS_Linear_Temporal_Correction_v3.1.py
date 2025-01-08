@@ -15,8 +15,8 @@ rid = 0
 
 
 # Path to read and write data
-SZA_PATH = "AVHRR/data/AVHRR_SZA_CORRECTED_v3.1/"
-LINEAR_PATH = "AVHRR/data/AVHRR_LINEAR_CORRECTED_v3.1/"
+SZA_PATH = "AVHRR/data/AVHRR_SZA_CORRECTED_v3.2/"
+LINEAR_PATH = "AVHRR/data/AVHRR_LINEAR_CORRECTED_v3.2/"
 AVHRR_MVC_DIR = "AVHRR/data/AVHRR_MVC/"
 
 
@@ -54,14 +54,14 @@ igbp_2014_data = igbp_2014.read()[0]
 land = igbp_2014_data > 0
 
 avhrr_ref_ma = np.load(os.path.join(SZA_PATH, "SZA_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])))
-slope_ma = np.load(os.path.join(LINEAR_PATH, "snow_slope_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])))
-intercept_ma = np.load(os.path.join(LINEAR_PATH, "snow_intercept_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])))
+slope_ma = np.load(os.path.join(LINEAR_PATH, "slope_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])))
+intercept_ma = np.load(os.path.join(LINEAR_PATH, "intercept_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])))
 slope_ma[np.isnan(slope_ma) & land[0:3000, :]] = 1.0
 intercept_ma[np.isnan(intercept_ma) & land[0:3000, :]] = 0.0
 linear_corrected = avhrr_ref_ma * slope_ma + intercept_ma
 
-slope_m1_ma = np.load(os.path.join(LINEAR_PATH, "snow_m1_slope_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])))
-intercept_m1_ma = np.load(os.path.join(LINEAR_PATH, "snow_m1_intercept_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])))
+slope_m1_ma = np.load(os.path.join(LINEAR_PATH, "m1_slope_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])))
+intercept_m1_ma = np.load(os.path.join(LINEAR_PATH, "m1_intercept_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])))
 slope_m1_ma[np.isnan(slope_m1_ma) & land[0:3000, :]] = 1.0
 intercept_m1_ma[np.isnan(intercept_m1_ma) & land[0:3000, :]] = 0.0
 linear_corrected_m1 = avhrr_m1_ref_ma * slope_m1_ma + intercept_m1_ma
@@ -70,4 +70,4 @@ linear_corrected_all = np.concatenate([linear_corrected, linear_corrected_m1])
 
 if ref_var == "nir":
     linear_corrected_all[linear_corrected_all > 0.8] = np.nan # this will help to remove most of the high latitude bad data points in winter
-np.save(os.path.join(LINEAR_PATH, "snow_corrected_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])), linear_corrected_all)
+np.save(os.path.join(LINEAR_PATH, "corrected_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])), linear_corrected_all)

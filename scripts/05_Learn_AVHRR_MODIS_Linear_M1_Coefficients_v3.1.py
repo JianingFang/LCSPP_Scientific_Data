@@ -17,8 +17,8 @@ rid = 0
 # Path to read and write data
 AVHRR_MVC_DIR = "AVHRR/data/AVHRR_MVC/"
 ERA5_PATH = "data/ERA5/"
-SZA_PATH = "AVHRR/data/AVHRR_SZA_CORRECTED_v3.1/"
-LINEAR_PATH = "AVHRR/data/AVHRR_LINEAR_CORRECTED_v3.1/"
+SZA_PATH = "AVHRR/data/AVHRR_SZA_CORRECTED_v3.2/"
+LINEAR_PATH = "AVHRR/data/AVHRR_LINEAR_CORRECTED_v3.2/"
 MODIS_MVC_DIR = "AVHRR/data/MODIS_MVC/"
 
 IDX = int(os.getenv('SLURM_ARRAY_TASK_ID')) - 1
@@ -42,7 +42,7 @@ MODIS_MVC_files = []
 AVHRR_MVC_files = []
 
 
-for year in np.arange(2014, 2023):
+for year in np.arange(2014, 2024):
     for month in np.arange(1, 13):
         for half_month_index in ["a", "b"]:
             MODIS_MVC_files.append(os.path.join(MODIS_MVC_DIR, "MODIS_MVC_" + str(year) + '{:0>2}'.format(month) + half_month_index + ".nc"))
@@ -103,6 +103,6 @@ for i in range(SINGLE_HEIGHT):
                     modis_slope_ma[i, j] = slope
                     modis_intercept_ma[i, j] = intercept
                     modis_r2_ma[i, j] = r_value**2
-np.save(os.path.join(LINEAR_PATH, "snow_m1_slope_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])), modis_slope_ma)
-np.save(os.path.join(LINEAR_PATH, "snow_m1_intercept_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])), modis_intercept_ma)
-np.save(os.path.join(LINEAR_PATH, "snow_m1_r2_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])), modis_r2_ma)
+np.save(os.path.join(LINEAR_PATH, "m1_slope_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])), modis_slope_ma)
+np.save(os.path.join(LINEAR_PATH, "m1_intercept_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])), modis_intercept_ma)
+np.save(os.path.join(LINEAR_PATH, "m1_r2_{}_{}.npy".format(ref_var, biweekly_identifiers[bid])), modis_r2_ma)

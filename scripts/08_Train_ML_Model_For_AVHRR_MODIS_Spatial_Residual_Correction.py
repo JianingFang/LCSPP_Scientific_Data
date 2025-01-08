@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 
 
-ML_PATH = "AVHRR/data/ML_CORRECT_v3.1/"
+ML_PATH = "AVHRR/data/ML_CORRECT_v3.2/"
 
 
 
@@ -36,16 +36,16 @@ for month in np.arange(1, 13):
         biweekly_identifiers.append('{:0>2}'.format(month) + half_month_index)
 bi = biweekly_identifiers[bid]
 
-X_train = np.load(os.path.join(ML_PATH, "snow_X_train_{}_{}.npy".format(ref_var, bi))).astype(np.float32).T
-Y_train = np.load(os.path.join(ML_PATH, "snow_Y_train_{}_{}.npy".format(ref_var, bi))).astype(np.float32)
+X_train = np.load(os.path.join(ML_PATH, "X_train_{}_{}.npy".format(ref_var, bi))).astype(np.float32).T
+Y_train = np.load(os.path.join(ML_PATH, "Y_train_{}_{}.npy".format(ref_var, bi))).astype(np.float32)
 train_valid = (np.sum(np.isnan(X_train), axis=1)==0) & np.invert(np.isnan(Y_train))
 X_train = X_train[train_valid, :]
 Y_train = Y_train[train_valid]
 
 
-#rand_idx = np.random.permutation(X_train.shape[0])
-#np.save(os.path.join(ML_PATH, "{}_train_idx_v3.1.npy".format(ref_var)), rand_idx)
-rand_idx = np.load(os.path.join(ML_PATH, "{}_train_idx_v3.1.npy".format(ref_var)))
+rand_idx = np.random.permutation(X_train.shape[0])
+np.save(os.path.join(ML_PATH, "{}_{}_train_idx_v3.2.npy".format(ref_var)), rand_idx)
+rand_idx = np.load(os.path.join(ML_PATH, "{}_{}_train_idx_v3.2.npy".format(ref_var, bi)))
 X_train = X_train[rand_idx, :]
 Y_train = Y_train[rand_idx]
 
@@ -55,8 +55,8 @@ scaler = StandardScaler()
 scaler.fit(X_train)
 scaler_mean = scaler.mean_
 scaler_var = scaler.var_
-np.save(os.path.join(ML_PATH, "snow_{}_{}_train_scaler_mean_v3.1.npy".format(ref_var, bi)), np.array(scaler_mean))
-np.save(os.path.join(ML_PATH, "snow_{}_{}_train_scaler_var_v3.1.npy".format(ref_var, bi)), np.array(scaler_var))
+np.save(os.path.join(ML_PATH, "{}_{}_train_scaler_mean_v3.2.npy".format(ref_var, bi)), np.array(scaler_mean))
+np.save(os.path.join(ML_PATH, "{}_{}_train_scaler_var_v3.2.npy".format(ref_var, bi)), np.array(scaler_var))
 X_train=scaler.transform(X_train)
 train_end_idx = np.int64(X_train.shape[0] * 0.8)
 
@@ -208,6 +208,8 @@ def train(layers, input_dim, hidden_dims, lrs, bs, num_epochs, train_dataset, va
 
 n_train = np.int64(3e6)
 n_val = np.int64(1e6)
+n_test = np.int64(1e6)
+
 lrs = [1e-3,]
 bs = [1024]
 layers = [3,]
@@ -217,10 +219,6 @@ input_dim = 7
 train_ds = MLDataset(X_train[0:n_train, :], Y_train[0:n_train])
 val_ds = MLDataset(X_train[n_train:n_train+n_val, :], Y_train[n_train:n_train+n_val])
 train(layers, input_dim, hidden_dims, lrs, bs, num_epochs, train_ds, val_ds, PATIENCE=10)
-
-
-n_train = np.int64(20e6)
-n_val = np.int64(3e6)
 
 net = construct_model(7, 64, 3);
 model_name = ref_var + "_" + bi +  "_layer_" + str(3) + "_neuron_" + str(64) + "_lr" + str(0.001) +"_batchsize" + str(1024)
@@ -233,8 +231,8 @@ net=net.to(device="cpu")
 train_predict = net(torch.tensor(X_train)[0:n_train, :]).detach().numpy()[:, 0]
 
 
-X_test = np.load(os.path.join(ML_PATH, "snow_X_test_{}_{}.npy".format(ref_var, bi))).astype(np.float32).T
-Y_test = np.load(os.path.join(ML_PATH, "snow_Y_test_{}_{}.npy".format(ref_var, bi))).astype(np.float32)
+X_test = np.load(os.path.join(ML_PATH, "X_test_{}_{}.npy".format(ref_var, bi))).astype(np.float32).T
+Y_test = np.load(os.path.join(ML_PATH, "Y_test_{}_{}.npy".format(ref_var, bi))).astype(np.float32)
 test_valid = (np.sum(np.isnan(X_test), axis=1)==0) & np.invert(np.isnan(Y_test))
 X_test = X_test[test_valid, :]
 Y_test = Y_test[test_valid]
@@ -243,8 +241,8 @@ Y_test = Y_test[test_valid]
 test_shuffle_idx = np.random.permutation(X_test.shape[0])
 np.save(os.path.join(ML_PATH, "{}_test_idx.npy".format(ref_var)), test_shuffle_idx)
 test_shuffle_idx = np.load(os.path.join(ML_PATH, "{}_test_idx.npy".format(ref_var)))
-X_test_sample = X_test[test_shuffle_idx, :][0:500000, :]
-Y_test_sample = Y_test[test_shuffle_idx][0:500000]
+X_test_sample = X_test[test_shuffle_idx, :][0:n_test, :]
+Y_test_sample = Y_test[test_shuffle_idx][0:n_test]
 X_test_sample = scaler.transform(X_test_sample)
 
 Y_predict_sample = net(torch.tensor(X_test_sample)).cpu().detach().numpy()[:, 0]
@@ -303,5 +301,5 @@ evaluate_performance(Y_test_sample, Y_predict_sample, ax[1], "Test")
 fig.text(0.5, 0.04, 'Predicted {} error'.format(ref_var), ha='center', va='center', fontsize=14)
 fig.text(0.08, 0.5, 'Predicted {} error'.format(ref_var), ha='center', va='center', rotation='vertical', fontsize=14)
 
-plt.savefig(os.path.join(fig_dir, model_name + "snow_{}_{}_train_test_together_v3.1_snow.png".format(ref_var, bi)), dpi=300)
+plt.savefig(os.path.join(fig_dir, model_name + "{}_{}_train_test_together_v3.2_snow.png".format(ref_var, bi)), dpi=300)
 

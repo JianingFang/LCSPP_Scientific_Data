@@ -31,12 +31,12 @@ AI.values[AI.values < 0.001] = 0.001 # remove abberant values during interpolati
 AI.values[AI.values > 10] = 10 # remove abberant values during interpolation
 LOG_AI = np.log(AI)
 
-LINEAR_PATH = "AVHRR/data/AVHRR_LINEAR_CORRECTED_v3.1/"
+LINEAR_PATH = "AVHRR/data/AVHRR_LINEAR_CORRECTED_v3.2/"
 MODIS_MVC_DIR = "AVHRR/data/MODIS_MVC/"
 MERRA2_DIR = "../../data/MERRA2/"
 ERA5_PATH = "data/ERA5/"
-ML_PATH = "AVHRR/data/ML_CORRECT_v3.1/"
-ML_CORRECTED = "AVHRR/data/AVHRR_ML_CORRECTED_v3.1/"
+ML_PATH = "AVHRR/data/ML_CORRECT_v3.2/"
+ML_CORRECTED = "AVHRR/data/AVHRR_ML_CORRECTED_v3.2/"
 
 valid_period = np.load("../../data/valid_period.npy")
 
@@ -49,7 +49,7 @@ rid = 0
 # Obtain the filenames for all the input datasets
 yearmonth_list = []
 
-for year in np.arange(1982, 2023):
+for year in np.arange(1982, 2024):
     for month in np.arange(1, 13):
         for half_month_index in ["a", "b"]:
             yearmonth_list.append(str(year) + '{:0>2}'.format(month) + half_month_index)
@@ -102,15 +102,15 @@ nir_net.eval();
 nir_net=nir_net.to(device="cpu")
 
 
-red_scaler_mean = np.load(os.path.join(ML_PATH, "{}_train_scaler_mean_v3.1.npy".format("red")))
-red_scaler_var = np.load(os.path.join(ML_PATH, "{}_train_scaler_var_v3.1.npy".format("red")))
+red_scaler_mean = np.load(os.path.join(ML_PATH, "{}_train_scaler_mean_v3.2.npy".format("red")))
+red_scaler_var = np.load(os.path.join(ML_PATH, "{}_train_scaler_var_v3.2.npy".format("red")))
 red_scaler = StandardScaler()
 red_scaler.mean_ = red_scaler_mean
 red_scaler.var_ = red_scaler_var
 red_scaler.scale_ = np.sqrt(red_scaler_var)
 
-nir_scaler_mean = np.load(os.path.join(ML_PATH, "{}_train_scaler_mean_v3.1.npy".format("nir")))
-nir_scaler_var = np.load(os.path.join(ML_PATH, "{}_train_scaler_var_v3.1.npy".format("nir")))
+nir_scaler_mean = np.load(os.path.join(ML_PATH, "{}_train_scaler_mean_v3.2.npy".format("nir")))
+nir_scaler_var = np.load(os.path.join(ML_PATH, "{}_train_scaler_var_v3.2.npy".format("nir")))
 nir_scaler = StandardScaler()
 nir_scaler.mean_ = nir_scaler_mean
 nir_scaler.var_ = nir_scaler_var
@@ -134,7 +134,7 @@ for i in range(len(yearmonth_list_valid)):
     cld_ds = xr.open_dataset(os.path.join(ERA5_PATH, cld_fn))
     cld_ma = np.flip(cld_ds.Band1.values, axis=0)
 
-    sd_fn = np.array([f for f in sorted(os.listdir(ERA5_PATH)) if "_true_CMG_biweekly_snow_depth_" in f and yearmonth_list_valid[i] in f])[0]
+    sd_fn = np.array([f for f in sorted(os.listdir(ERA5_PATH)) if "_true_CMG_biweekly_depth_" in f and yearmonth_list_valid[i] in f])[0]
     sd_ds = xr.open_dataset(os.path.join(ERA5_PATH, sd_fn))
     sd_ma = np.flip(sd_ds.Band1.values, axis=0)
     

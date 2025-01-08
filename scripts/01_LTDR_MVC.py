@@ -106,7 +106,7 @@ def avhrr_mvc(hml):
 if __name__ == "__main__":  
     IDX = int(os.getenv('SLURM_ARRAY_TASK_ID')) - 1
 
-    YY=np.arange(1982, 2023)[IDX]
+    YY=np.arange(1982, 2024)[IDX]
     file_list_16days = []
     for year in np.arange(YY, YY+1):
         mr = np.arange(1, 13)

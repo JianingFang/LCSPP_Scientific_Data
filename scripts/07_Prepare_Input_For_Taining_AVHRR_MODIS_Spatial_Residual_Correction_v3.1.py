@@ -32,11 +32,11 @@ AI.values[AI.values < 0.001] = 0.001 # remove abberant values during interpolati
 AI.values[AI.values > 10] = 10 # remove abberant values during interpolation
 LOG_AI = np.log(AI)
 
-LINEAR_PATH = "AVHRR/data/AVHRR_LINEAR_CORRECTED_v3.1/"
+LINEAR_PATH = "AVHRR/data/AVHRR_LINEAR_CORRECTED_v3.2/"
 MODIS_MVC_DIR = "AVHRR/data/MODIS_MVC/"
 MERRA2_DIR = "../../data/MERRA2/"
 ERA5_PATH = "data/ERA5/"
-ML_PATH = "AVHRR/data/ML_CORRECT_v3.1/"
+ML_PATH = "AVHRR/data/ML_CORRECT_v3.2/"
 
 # Divide into memory if the entire dataset cannot fit into memory
 TOTAL_REGIONS = 1
@@ -46,15 +46,15 @@ rid = 0
 # Obtain the filenames for all the input datasets
 MODIS_MVC_files = []
 
-for year in np.arange(2001, 2023):
+for year in np.arange(2001, 2024):
     mr = np.arange(1, 13)
     for month in mr:
         for half_month_index in ["a", "b"]:
             MODIS_MVC_files.append(os.path.join(MODIS_MVC_DIR, "MODIS_MVC_" + str(year) + '{:0>2}'.format(month) + half_month_index + ".nc"))
 MVC_files_valid  = [f for f in np.array(MODIS_MVC_files) if bi in f]
 
-avhrr_fn = [f for f in sorted(os.listdir(LINEAR_PATH)) if "snow_corrected_{}_{}".format(ref_var, bi) in f][0]
-avhrr_other_fn = [f for f in sorted(os.listdir(LINEAR_PATH)) if "snow_corrected_{}_{}".format(other_ref_var, bi) in f][0]
+avhrr_fn = [f for f in sorted(os.listdir(LINEAR_PATH)) if "corrected_{}_{}".format(ref_var, bi) in f][0]
+avhrr_other_fn = [f for f in sorted(os.listdir(LINEAR_PATH)) if "corrected_{}_{}".format(other_ref_var, bi) in f][0]
 
 
 test_years = np.arange(1, len(MVC_files_valid), 8)
@@ -92,8 +92,8 @@ valid_count_train = np.sum(valid_ma_train)
 valid_ma_test = np.invert(np.isnan(dif_ref_ma_test))
 valid_count_test = np.sum(valid_ma_test)
 
-rand_select_train = np.random.rand(np.int32(valid_count_train)) < 0.1
-rand_select_test = np.random.rand(np.int32(valid_count_test)) < 0.1
+rand_select_train = np.random.rand(np.int32(valid_count_train)) < 0.4
+rand_select_test = np.random.rand(np.int32(valid_count_test)) < 0.4
 
 selected_dif_train = dif_ref_ma_train[valid_ma_train][rand_select_train]
 selected_dif_test = dif_ref_ma_test[valid_ma_test][rand_select_test]
@@ -143,7 +143,7 @@ cld_ma_test = cld_ma[test_years, :, :]
 selected_cld_train = cld_ma_train[valid_ma_train][rand_select_train]
 selected_cld_test = cld_ma_test[valid_ma_test][rand_select_test]
 
-sd_valid = np.array([f for f in sorted(os.listdir(ERA5_PATH)) if "_true_CMG_biweekly_snow_depth_" in f and bi in f])
+sd_valid = np.array([f for f in sorted(os.listdir(ERA5_PATH)) if "_true_CMG_biweekly_depth_" in f and bi in f])
 sd_valid=sd_valid[-len(MVC_files_valid):]
 
 sd_ma = np.full(avhrr_ref_ma.shape, np.nan, dtype=np.float32)
@@ -160,7 +160,7 @@ selected_sd_test = sd_ma_test[valid_ma_test][rand_select_test]
 X_train=np.array([selected_avhrr_ref_train, selected_avhrr_other_ref_train, selected_logai_train, selected_dem_train, selected_aod_train, selected_cld_train, selected_sd_train])
 X_test=np.array([selected_avhrr_ref_test, selected_avhrr_other_ref_test, selected_logai_test, selected_dem_test, selected_aod_test, selected_cld_test, selected_sd_test])
 
-np.save(os.path.join(ML_PATH, "snow_X_train_{}_{}".format(ref_var, bi)), X_train)
-np.save(os.path.join(ML_PATH, "snow_X_test_{}_{}".format(ref_var, bi)), X_test)
-np.save(os.path.join(ML_PATH, "snow_Y_train_{}_{}".format(ref_var, bi)), selected_dif_train)
-np.save(os.path.join(ML_PATH, "snow_Y_test_{}_{}".format(ref_var, bi)), selected_dif_test)
+np.save(os.path.join(ML_PATH, "X_train_{}_{}".format(ref_var, bi)), X_train)
+np.save(os.path.join(ML_PATH, "X_test_{}_{}".format(ref_var, bi)), X_test)
+np.save(os.path.join(ML_PATH, "Y_train_{}_{}".format(ref_var, bi)), selected_dif_train)
+np.save(os.path.join(ML_PATH, "Y_test_{}_{}".format(ref_var, bi)), selected_dif_test)

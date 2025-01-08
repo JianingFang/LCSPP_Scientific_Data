@@ -158,12 +158,12 @@ def construct_ref_45(fn, save_file=True):
             nir_brdf_normalized_sza45 = xr.DataArray(np.expand_dims(nir_45, axis=0),
                                                      coords={"time":[np.datetime64(date_obj)], "lat":lat, "lon":lon})
             
-            percent_snow_da = xr.DataArray(np.expand_dims(percent_snow, axis=0),
+            percent_da = xr.DataArray(np.expand_dims(percent_snow, axis=0),
                                                      coords={"time":[np.datetime64(date_obj)], "lat":lat, "lon":lon})
 
             ref_45_ds = xr.Dataset({"red_brdf_normalized_sza45":red_brdf_normalized_sza45,
                         "nir_brdf_normalized_sza45":nir_brdf_normalized_sza45,
-                                   "percent_snow":percent_snow_da})
+                                   "percent_snow":percent_da})
 
             ref_45_ds.to_netcdf(os.path.join(REF45_DIR, fn.split("/")[-1].split(".")[1] + ".nc"))
 
@@ -203,7 +203,7 @@ def worker(hml):
     for f in hml:
         os.remove(f)
         
-def sif_worker(hml):
+def lcspp_worker(hml):
     for f in hml:
         red_45, nir_45, ndvi_45, percent_snow = construct_ref_45(f, save_file=True)
     for f in hml:
